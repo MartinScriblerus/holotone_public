@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holotone Hydra projection</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="page-projection">
+    <div id="hydra-root" class="hydra-stage hydra-stage--wall" aria-label="Hydra projection canvas"></div>
+    <div class="chrome chrome--projection">
+      <button type="button" id="fullscreen-btn">Fullscreen</button>
+      <a class="source-link" href="https://github.com/MartinScriblerus/holotone_public" target="_blank" rel="noopener">Source</a>
+      <span id="status" class="status">waiting</span>
+    </div>
+    <script type="module" src="/src/projection.ts"></script>
+  </body>
+</html>

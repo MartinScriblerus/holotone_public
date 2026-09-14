@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holotone — public visuals & notes</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="page-home">
+    <header class="site-header">
+      <p class="brand">holotone</p>
+      <p class="tagline">No-code ChucK flow · Hydra synthesis · public AGPL visual lane</p>
+      <nav class="site-nav">
+        <a href="#approach">Approach</a>
+        <a href="#embed-demo">Live embed</a>
+        <a href="/projection/demo" target="_blank" rel="noopener">Open projection canvas</a>
+        <a class="source-link" href="https://github.com/MartinScriblerus/holotone_public">Source (AGPL)</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <h1>Public visual runtime for a private instrument</h1>
+        <p>
+          StrangeLoop keeps WebChucK audio private. This site is the copyleft-safe Hydra surface:
+          iframe preview, dual / wall canvas, and notes on playing without writing ChucK by hand.
+        </p>
+        <p class="soon">How-to-play video and update posts will land here.</p>
+      </section>
+
+      <section id="approach" class="prose">
+        <h2>Approach</h2>
+        <ul>
+          <li><strong>Play</strong> — keyboard / MIDI → Layer A note path in the private app.</li>
+          <li><strong>Network</strong> — clock and sessions stay on the instrument origin.</li>
+          <li><strong>Codegen</strong> — ChucK VM programs are generated for you; you don’t ship Hydra inside that bundle.</li>
+          <li><strong>Hydra</strong> — graph JSON + CV + media URLs cross the iframe via <code>postMessage</code>; pixels render here under AGPL.</li>
+        </ul>
+        <p>
+          Upstream: <a href="https://github.com/hydra-synth/hydra-synth">hydra-synth</a>
+          (<a href="https://github.com/hydra-synth/hydra/blob/main/LICENSE">AGPL license</a>).
+          Attribution: <a href="/NOTICE">NOTICE</a>.
+        </p>
+      </section>
+
+      <section id="embed-demo" class="embed-demo">
+        <h2>Integrated canvas (iframe)</h2>
+        <p>This is the microservice surface StrangeLoop (or any parent) can embed.</p>
+        <div class="frame-wrap">
+          <iframe
+            id="demo-embed"
+            src="/embed.html?demo=1"
+            title="Holotone Hydra embed"
+            allow="camera; fullscreen; autoplay"
+          ></iframe>
+        </div>
+        <p class="hint">
+          Second canvas: use
+          <a href="/projection/demo" target="_blank" rel="noopener">/projection/:target</a>
+          for a wall / dual-display window.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a href="https://github.com/MartinScriblerus/holotone_public">Corresponding Source</a>
+      · AGPL-3.0 · Holotone
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

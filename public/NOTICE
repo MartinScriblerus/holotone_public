@@ -1,0 +1,40 @@
+Holotone Public — Attribution & Notices
+=======================================
+
+This repository is released under the GNU Affero General Public License v3
+(or later). See ./LICENSE.
+
+Third-party covered works
+-------------------------
+
+1. hydra-synth
+   Copyright (c) Olivia Jack and contributors
+   License: GNU Affero General Public License v3.0
+   Source: https://github.com/hydra-synth/hydra-synth
+   Related editor: https://github.com/hydra-synth/hydra
+   License text: https://github.com/hydra-synth/hydra/blob/main/LICENSE
+
+Holotone Public includes an AGPL-compatible runtime wrapper around hydra-synth
+(host creation, media binding helpers, dual-canvas / iframe embed surfaces, and
+the postMessage protocol used by the private StrangeLoop instrument).
+
+Corresponding Source
+--------------------
+
+If you interact with a deployed instance of this site (including iframe embeds),
+AGPL §13 requires an opportunity to obtain Corresponding Source for the version
+you are using. The canonical Source offer is:
+
+  https://github.com/MartinScriblerus/holotone_public
+
+A visible “Source” link is also rendered on embed and projection surfaces.
+
+Relationship to StrangeLoop
+---------------------------
+
+StrangeLoop (private) owns ChucK / WebChucK audio, MIDI, and instrument UI.
+It must not import hydra-synth. It may embed this site via iframe or open a
+projection window and exchange LiveProjectionSnapshot-compatible messages.
+
+This separation keeps the AGPL covered work limited to the visual / Hydra lane
+and this public documentation surface.
