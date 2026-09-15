@@ -1,48 +1,39 @@
-import { createHydraSurface } from "./hydraSurface";
+/**
+ * In-app preview — same snapshot feed as the wall (URL / camera / screen / CV / graph).
+ * pointer-events none except while a capture gate needs a click (camera / tab share).
+ */
+import { createLiveSession } from "./liveSession";
 import {
   HOLOTONE_PROTOCOL,
   isHolotoneMessage,
   parseTargetFromPath,
   postToParent,
-  type LiveProjectionSnapshotLite,
 } from "./protocol";
 
 const root = document.getElementById("hydra-root");
 const statusEl = document.getElementById("status");
+const captureGate = document.getElementById("capture-gate");
+const captureTitle = document.getElementById("capture-gate-title");
+const captureHint = document.getElementById("capture-gate-hint");
+const captureError = document.getElementById("capture-gate-error");
+const captureBtn = document.getElementById("capture-enable-btn");
 if (!root) {
   throw new Error("missing #hydra-root");
 }
 
-const surface = createHydraSurface(root);
-const target = parseTargetFromPath();
-const params = new URLSearchParams(window.location.search);
-const demo = params.get("demo") === "1";
-
-function setStatus(text: string): void {
-  if (statusEl) {
-    statusEl.textContent = text;
-  }
-}
-
-function onSnapshot(snap: LiveProjectionSnapshotLite): void {
-  setStatus(`live · seq ${snap.seq}`);
-  // Full graph apply lands when StrangeLoop runtime is ported; CV can modulate boot osc later.
-  const energy = snap.performance?.energy;
-  if (typeof energy === "number" && Number.isFinite(energy)) {
-    const g = globalThis as {
-      osc?: (...args: unknown[]) => {
-        color?: (...c: unknown[]) => { out?: () => void };
-        out?: () => void;
-      };
-    };
-    try {
-      const freq = 1.5 + energy * 6;
-      g.osc?.(freq, 0.05, 0.15)?.color?.(0.2, 0.45 + energy * 0.3, 0.8)?.out?.();
-    } catch {
-      /* ignore */
-    }
-  }
-}
+const session = createLiveSession({
+  root,
+  mode: "embed",
+  target: parseTargetFromPath() ?? "preview",
+  maxWidth: 640,
+  maxHeight: 360,
+  statusEl,
+  captureGate,
+  captureTitle,
+  captureHint,
+  captureError,
+  captureBtn,
+});
 
 window.addEventListener("message", (event) => {
   if (!isHolotoneMessage(event.data)) {
@@ -54,16 +45,10 @@ window.addEventListener("message", (event) => {
     return;
   }
   if (msg.type === "snapshot" && msg.payload) {
-    onSnapshot(msg.payload);
+    void session.applySnapshot(msg.payload);
   }
 });
 
-postToParent({
-  protocol: HOLOTONE_PROTOCOL,
-  type: "ready",
-  payload: { mode: "embed", target },
+window.addEventListener("beforeunload", () => {
+  session.dispose();
 });
-
-setStatus(demo ? "demo embed" : "ready · waiting for parent");
-
-window.addEventListener("beforeunload", () => surface.dispose());

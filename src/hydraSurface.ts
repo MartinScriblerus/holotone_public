@@ -1,5 +1,11 @@
 import Hydra from "hydra-synth";
 
+export type HydraSurfaceOptions = {
+  /** Cap internal render size (embed preview). Display still CSS-scales. */
+  maxWidth?: number;
+  maxHeight?: number;
+};
+
 export type HydraSurface = {
   canvas: HTMLCanvasElement;
   hydra: InstanceType<typeof Hydra>;
@@ -7,12 +13,17 @@ export type HydraSurface = {
   resize: () => void;
 };
 
-/** Minimal AGPL host — boot sketch until StrangeLoop graph runtime is ported. */
-export function createHydraSurface(container: HTMLElement): HydraSurface {
+/** Minimal AGPL host — boot sketch until parent sends a graph snapshot. */
+export function createHydraSurface(
+  container: HTMLElement,
+  options: HydraSurfaceOptions = {},
+): HydraSurface {
   const canvas = document.createElement("canvas");
   canvas.style.width = "100%";
   canvas.style.height = "100%";
   canvas.style.display = "block";
+  // Preview must never steal pointer events from the parent instrument UI.
+  canvas.style.pointerEvents = "none";
   container.appendChild(canvas);
 
   const hydra = new Hydra({
@@ -24,11 +35,24 @@ export function createHydraSurface(container: HTMLElement): HydraSurface {
   };
 
   const resize = () => {
-    const w = container.clientWidth || window.innerWidth;
-    const h = container.clientHeight || window.innerHeight;
+    let w = container.clientWidth || window.innerWidth;
+    let h = container.clientHeight || window.innerHeight;
     if (w <= 0 || h <= 0) {
       return;
     }
+    const maxW = options.maxWidth;
+    const maxH = options.maxHeight;
+    if (maxW && w > maxW) {
+      h = Math.round((h * maxW) / w);
+      w = maxW;
+    }
+    if (maxH && h > maxH) {
+      w = Math.round((w * maxH) / h);
+      h = maxH;
+    }
+    // Prefer even dims for WebGL.
+    w = Math.max(2, w - (w % 2));
+    h = Math.max(2, h - (h % 2));
     if (typeof hydra.setResolution === "function") {
       hydra.setResolution(w, h);
     } else {

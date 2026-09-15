@@ -8,6 +8,16 @@
   </head>
   <body class="page-projection">
     <div id="hydra-root" class="hydra-stage hydra-stage--wall" aria-label="Hydra projection canvas"></div>
+    <div id="capture-gate" class="capture-gate" hidden>
+      <div class="capture-gate__panel">
+        <p id="capture-gate-title" class="capture-gate__title">Media needs a click in this window.</p>
+        <p id="capture-gate-hint" class="capture-gate__hint">
+          Browsers require a gesture on this origin for camera or tab capture.
+        </p>
+        <p id="capture-gate-error" class="capture-gate__error" hidden></p>
+        <button type="button" id="capture-enable-btn" class="capture-gate__btn">Enable</button>
+      </div>
+    </div>
     <div class="chrome chrome--projection">
       <button type="button" id="fullscreen-btn">Fullscreen</button>
       <a class="source-link" href="https://github.com/MartinScriblerus/holotone_public" target="_blank" rel="noopener">Source</a>

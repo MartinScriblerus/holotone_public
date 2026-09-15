@@ -3,13 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Holotone Hydra embed</title>
+    <title>Holotone Hydra preview</title>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
-  <body class="page-embed">
-    <div id="hydra-root" class="hydra-stage" aria-label="Hydra canvas"></div>
-    <div class="chrome chrome--embed">
-      <a class="source-link" href="https://github.com/MartinScriblerus/holotone_public" target="_blank" rel="noopener">Source</a>
+  <body class="page-embed page-embed--preview">
+    <div id="hydra-root" class="hydra-stage hydra-stage--preview" aria-label="Hydra preview"></div>
+    <div id="capture-gate" class="capture-gate" hidden>
+      <div class="capture-gate__panel">
+        <p id="capture-gate-title" class="capture-gate__title">Media needs a click here.</p>
+        <p id="capture-gate-hint" class="capture-gate__hint">
+          Enable once so this preview matches the wall.
+        </p>
+        <p id="capture-gate-error" class="capture-gate__error" hidden></p>
+        <button type="button" id="capture-enable-btn" class="capture-gate__btn">Enable</button>
+      </div>
+    </div>
+    <div class="chrome chrome--embed chrome--preview" aria-hidden="true">
       <span id="status" class="status">boot</span>
     </div>
     <script type="module" src="/src/embed.ts"></script>

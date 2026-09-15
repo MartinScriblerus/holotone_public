@@ -1,6 +1,5 @@
 /**
  * Cross-origin protocol between StrangeLoop (parent) and holotone_public (iframe / popup).
- * BroadcastChannel cannot cross Vercel origins — use window.postMessage instead.
  */
 
 export const HOLOTONE_PROTOCOL = "holotone-hydra/v1" as const;
@@ -11,7 +10,7 @@ export type HolotoneEnvelope<T extends string, P = unknown> = {
   payload?: P;
 };
 
-/** Subset aligned with StrangeLoop LiveProjectionSnapshot — extend as the port lands. */
+/** Full projection snapshot fields needed to run the Hydra graph remotely. */
 export type LiveProjectionSnapshotLite = {
   v: 2;
   seq: number;
@@ -20,17 +19,47 @@ export type LiveProjectionSnapshotLite = {
   performance?: {
     bpm: number;
     beat: number;
+    count?: number;
+    onsets?: number;
     energy: number;
+    impact?: number;
     motion: number;
     pulse: number;
   };
+  meyda?: {
+    rms: number;
+    flatness: number;
+    zcr: number;
+    flux: number;
+    centroid: number;
+    low: number;
+    mid: number;
+    high: number;
+  };
+  cvMix?: {
+    master: number;
+    onsets: number;
+    beat: number;
+    impact: number;
+    pulse: number;
+    energy: number;
+  };
+  overlay?: { r: number; g: number; b: number };
   media?: {
     videoUrl: string | null;
     videoLabel: string | null;
     cameraRequested: boolean;
+    /** Tab/window/screen via getDisplayMedia on this origin. */
+    screenRequested?: boolean;
+    /** Center-zoom into capture (trim browser / YouTube chrome). 1–2.5 */
+    frameZoom?: number;
+    /** Parent: wall Window open — embed must not Enable / getDisplayMedia. */
+    wallPreferred?: boolean;
   };
-  /** Opaque graph JSON until full HydraOperationChain types are ported. */
-  graph?: unknown;
+  graph?: {
+    revision: number;
+    chains: unknown[];
+  };
 };
 
 export type ParentToChild =
@@ -40,7 +69,9 @@ export type ParentToChild =
 export type ChildToParent =
   | HolotoneEnvelope<"ready", { mode: "embed" | "projection"; target: string | null }>
   | HolotoneEnvelope<"pong">
-  | HolotoneEnvelope<"error", { message: string }>;
+  | HolotoneEnvelope<"error", { message: string }>
+  | HolotoneEnvelope<"captureGate", { pending: boolean; kind: "camera" | "screen" | null }>
+  | HolotoneEnvelope<"captureEnded", { kind: "camera" | "screen" }>;
 
 export function isHolotoneMessage(data: unknown): data is ParentToChild | ChildToParent {
   if (!data || typeof data !== "object") {

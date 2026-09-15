@@ -41,10 +41,19 @@ StrangeLoop parent  -- holotone:snapshot -->  iframe / projection
 ```html
 <iframe
   src="https://<holotone-public>.vercel.app/embed?parent=1"
-  allow="camera; fullscreen; autoplay"
+  allow="camera; display-capture; fullscreen; autoplay"
   title="Holotone Hydra"
 ></iframe>
 ```
+
+## Media → `s0`
+
+| Source | How |
+|--------|-----|
+| Direct `.mp4` / `.webm` HTTPS URL | `<video>` → `s0.init` |
+| HLS `.m3u8` (VLC/OBS → HTTP) | `hls.js` (or native Safari) → `s0` — needs CORS + HTTPS if the page is HTTPS |
+| Camera | Snapshot `cameraRequested` → click **Enable camera** on this origin |
+| Tab / screen | Snapshot `screenRequested` → click **Share tab / screen** → browser picker |
 
 CSP `frame-ancestors` in `vercel.json` allows `*.vercel.app` and localhost. Tighten to your instrument hostname when stable.
 
@@ -57,7 +66,7 @@ npm run dev    # http://localhost:5174
 
 ## Roadmap (content + code)
 
-- [ ] Port full StrangeLoop Hydra graph runtime / s0 media binder into this package
+- [x] Media binder: HTTPS video, HLS `.m3u8`, camera, tab/screen → `s0`
 - [ ] How-to-play video on the home page
 - [ ] Public notes: no-code ChucK flow, networking, codegen
 - [ ] StrangeLoop iframe host + stop importing `hydra-synth` from the private bundle

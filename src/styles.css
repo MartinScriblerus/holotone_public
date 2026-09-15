@@ -107,12 +107,16 @@ a {
   position: absolute;
   inset: 0;
   background: var(--stage);
+  overflow: hidden;
 }
 
 .hydra-stage canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
+  /* Loose wall framing — fill the window without stretching the bitmap. */
+  object-fit: cover;
+  object-position: center;
 }
 
 .chrome {
@@ -160,4 +164,70 @@ a {
 
 .source-link:hover {
   text-decoration: underline;
+}
+
+.page-embed--preview {
+  background: #000;
+}
+
+.hydra-stage--preview {
+  pointer-events: none;
+}
+
+.chrome--preview {
+  opacity: 0.55;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.capture-gate {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+  pointer-events: auto;
+}
+
+.capture-gate[hidden] {
+  display: none;
+}
+
+.capture-gate__panel {
+  max-width: 26rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line);
+  background: #12161e;
+}
+
+.capture-gate__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.capture-gate__hint {
+  margin: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.capture-gate__error {
+  margin: 0 0 0.75rem;
+  color: #ff8f8f;
+  font-size: 0.85rem;
+}
+
+.capture-gate__btn {
+  appearance: none;
+  border: 1px solid var(--accent);
+  background: #1a2430;
+  color: var(--fg);
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
 }
