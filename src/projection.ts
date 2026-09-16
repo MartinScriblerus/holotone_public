@@ -1,47 +1,34 @@
-import { createHydraSurface } from "./hydraSurface";
+import { createLiveSession } from "./liveSession";
 import {
   HOLOTONE_PROTOCOL,
   isHolotoneMessage,
   parseTargetFromPath,
   postToParent,
-  type LiveProjectionSnapshotLite,
 } from "./protocol";
 
 const root = document.getElementById("hydra-root");
 const statusEl = document.getElementById("status");
 const fullscreenBtn = document.getElementById("fullscreen-btn");
+const captureGate = document.getElementById("capture-gate");
+const captureTitle = document.getElementById("capture-gate-title");
+const captureHint = document.getElementById("capture-gate-hint");
+const captureError = document.getElementById("capture-gate-error");
+const captureBtn = document.getElementById("capture-enable-btn");
 if (!root) {
   throw new Error("missing #hydra-root");
 }
 
-const surface = createHydraSurface(root);
-const target = parseTargetFromPath() ?? "demo";
-
-function setStatus(text: string): void {
-  if (statusEl) {
-    statusEl.textContent = text;
-  }
-}
-
-function onSnapshot(snap: LiveProjectionSnapshotLite): void {
-  setStatus(`${target} · seq ${snap.seq}`);
-  const motion = snap.performance?.motion ?? snap.performance?.pulse ?? 0;
-  const g = globalThis as {
-    osc?: (...args: unknown[]) => {
-      kaleid?: (n: number) => { colorama?: (n: number) => { out?: () => void } };
-      out?: () => void;
-    };
-  };
-  try {
-    const chain = g.osc?.(3 + motion * 4, 0.03, 0.25);
-    chain?.kaleid?.(2 + Math.floor(motion * 4))?.colorama?.(motion * 0.2)?.out?.() ?? chain?.out?.();
-  } catch {
-    /* ignore */
-  }
-}
-
-fullscreenBtn?.addEventListener("click", () => {
-  void document.documentElement.requestFullscreen?.();
+const session = createLiveSession({
+  root,
+  mode: "projection",
+  target: parseTargetFromPath() ?? "demo",
+  statusEl,
+  fullscreenBtn,
+  captureGate,
+  captureTitle,
+  captureHint,
+  captureError,
+  captureBtn,
 });
 
 window.addEventListener("message", (event) => {
@@ -54,15 +41,10 @@ window.addEventListener("message", (event) => {
     return;
   }
   if (msg.type === "snapshot" && msg.payload) {
-    onSnapshot(msg.payload);
+    void session.applySnapshot(msg.payload);
   }
 });
 
-postToParent({
-  protocol: HOLOTONE_PROTOCOL,
-  type: "ready",
-  payload: { mode: "projection", target },
+window.addEventListener("beforeunload", () => {
+  session.dispose();
 });
-
-setStatus(`${target} · waiting`);
-window.addEventListener("beforeunload", () => surface.dispose());
