@@ -34,6 +34,9 @@ export function createHydraSurface(
     setResolution?: (w: number, h: number) => void;
   };
 
+  // Preview: 30 fps is plenty and frees the GPU/CPU for the audio engine.
+  (hydra as unknown as { synth: { fps?: number } }).synth.fps = options.maxWidth ? 30 : undefined;
+
   const resize = () => {
     let w = container.clientWidth || window.innerWidth;
     let h = container.clientHeight || window.innerHeight;
