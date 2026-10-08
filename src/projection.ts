@@ -42,6 +42,14 @@ window.addEventListener("message", (event) => {
   }
   if (msg.type === "snapshot" && msg.payload) {
     void session.applySnapshot(msg.payload);
+    return;
+  }
+  if (msg.type === "recordStart" && msg.payload?.sessionId) {
+    session.startRecording(msg.payload.sessionId);
+    return;
+  }
+  if (msg.type === "recordStop") {
+    session.stopRecording(msg.payload?.sessionId);
   }
 });
 

@@ -62,16 +62,42 @@ export type LiveProjectionSnapshotLite = {
   };
 };
 
+export type RecordCommandPayload = {
+  sessionId: string;
+  targetId: string;
+};
+
+export type RecordCompletedPayload = {
+  sessionId: string;
+  targetId: string;
+  filename: string;
+  mimeType: string;
+  durationMs: number;
+  startedAtPerformanceMs: number;
+  stoppedAtPerformanceMs: number;
+  blob: Blob;
+};
+
+export type RecordErrorPayload = {
+  sessionId: string;
+  targetId: string;
+  message: string;
+};
+
 export type ParentToChild =
   | HolotoneEnvelope<"snapshot", LiveProjectionSnapshotLite>
-  | HolotoneEnvelope<"ping">;
+  | HolotoneEnvelope<"ping">
+  | HolotoneEnvelope<"recordStart", RecordCommandPayload>
+  | HolotoneEnvelope<"recordStop", RecordCommandPayload>;
 
 export type ChildToParent =
   | HolotoneEnvelope<"ready", { mode: "embed" | "projection"; target: string | null }>
   | HolotoneEnvelope<"pong">
   | HolotoneEnvelope<"error", { message: string }>
   | HolotoneEnvelope<"captureGate", { pending: boolean; kind: "camera" | "screen" | null }>
-  | HolotoneEnvelope<"captureEnded", { kind: "camera" | "screen" }>;
+  | HolotoneEnvelope<"captureEnded", { kind: "camera" | "screen" }>
+  | HolotoneEnvelope<"recordCompleted", RecordCompletedPayload>
+  | HolotoneEnvelope<"recordError", RecordErrorPayload>;
 
 export function isHolotoneMessage(data: unknown): data is ParentToChild | ChildToParent {
   if (!data || typeof data !== "object") {
