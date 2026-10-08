@@ -18,6 +18,7 @@ import {
   postToParent,
   type LiveProjectionSnapshotLite,
 } from "./protocol";
+import { createProjectionRecorder, type ProjectionRecorder } from "./projectionRecorder";
 
 export type LiveSessionMode = "embed" | "projection";
 
@@ -38,6 +39,8 @@ export type LiveSessionOptions = {
 
 export type LiveSession = {
   applySnapshot: (snap: LiveProjectionSnapshotLite) => Promise<void>;
+  startRecording: (sessionId: string) => void;
+  stopRecording: (sessionId?: string) => void;
   dispose: () => void;
 };
 
@@ -65,6 +68,7 @@ export function createLiveSession(opts: LiveSessionOptions): LiveSession {
     maxHeight: opts.maxHeight,
   });
   const target = opts.target ?? "demo";
+  const recorder: ProjectionRecorder = createProjectionRecorder(() => surface.canvas);
 
   let lastGraphRevision = -1;
   let lastChains: HydraOperationChain[] = [];
@@ -294,8 +298,15 @@ export function createLiveSession(opts: LiveSessionOptions): LiveSession {
 
   return {
     applySnapshot: onSnapshot,
+    startRecording: (sessionId: string) => {
+      recorder.start(sessionId, target);
+    },
+    stopRecording: (sessionId?: string) => {
+      recorder.stop(sessionId);
+    },
     dispose: () => {
       disposed = true;
+      recorder.dispose();
       document.removeEventListener("visibilitychange", onVisibility);
       io?.disconnect();
       media.dispose();
